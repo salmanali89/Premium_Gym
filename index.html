@@ -5,139 +5,135 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Premium Gym — North Karachi · POS</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 
 <style>
-/* ══════════════════════════════════════════════════
-   DESIGN TOKENS — Premium Grey · Black · Orange
-══════════════════════════════════════════════════ */
 :root {
-  --bg:        #0c0c0e;
-  --surface:   #131318;
-  --surface2:  #1b1b22;
-  --surface3:  #22222b;
-  --border:    #2e2e3a;
-  --border2:   #3a3a48;
-  --accent:    #f97316;
-  --text:      #eeeef5;
-  --text2:     #b0b0c0;
-  --muted:     #666678;
-  --red:       #ef4444;
-  --green:     #22c55e;
-  --blue:      #3b82f6;
-  --radius:    14px;
+  --bg: #0c0c0e; --surface: #131318; --surface2: #1b1b22;
+  --border: #2e2e3a; --accent: #f97316; --text: #eeeef5;
+  --muted: #666678; --red: #ef4444; --green: #22c55e; --blue: #3b82f6;
 }
-
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  min-height: 100vh;
-}
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
 
-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 36px; border-bottom: 1px solid var(--border);
-  background: rgba(12,12,14,0.94); position: sticky; top: 0; z-index: 200;
-}
-.logo-text { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:19px; text-transform:uppercase; }
+header { display: flex; align-items: center; justify-content: space-between; padding: 16px 36px; border-bottom: 1px solid var(--border); background: rgba(12,12,14,0.94); position: sticky; top: 0; z-index: 200; }
+.logo-text { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:22px; text-transform:uppercase; letter-spacing:1px; }
 .logo-text span { color:var(--accent); }
 
-main { padding:32px 36px; max-width:1380px; margin:0 auto; }
+main { padding:32px 36px; max-width:1400px; margin:0 auto; }
 
-.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-bottom:36px; }
-.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px; text-align:center; }
-.stat-num { font-family:'Barlow Condensed',sans-serif; font-size:42px; font-weight:900; color:var(--accent); }
+/* Stats */
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-bottom:30px; }
+.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; position:relative; }
+.stat-num { font-family:'Barlow Condensed',sans-serif; font-size:38px; font-weight:900; color:var(--accent); }
+.stat-label { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:1px; font-weight:700; }
 
-.bottom-grid { display:grid; grid-template-columns:1fr 380px; gap:22px; }
-.panel { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; }
+.main-layout { display:grid; grid-template-columns: 1fr 380px; gap:22px; }
 
-input, select { 
-  background:var(--surface2); border:1px solid var(--border); color:white; 
-  padding:10px; border-radius:8px; width:100%; margin-bottom:10px; outline:none;
-}
-.submit-btn { 
-  background:var(--accent); color:white; font-weight:bold; padding:12px; 
-  border-radius:8px; width:100%; cursor:pointer; border:none; text-transform:uppercase;
-}
+/* Panels */
+.panel { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:22px; }
+.panel-title { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:700; margin-bottom:15px; color:var(--text); text-transform:uppercase; display:flex; justify-content:space-between; }
 
-table { width:100%; border-collapse:collapse; margin-top:15px; }
-th { text-align:left; color:var(--muted); font-size:12px; padding:10px; border-bottom:1px solid var(--border); }
-td { padding:12px 10px; border-bottom:1px solid rgba(255,255,255,0.05); }
+/* Tables */
+table { width:100%; border-collapse:collapse; }
+th { text-align:left; color:var(--muted); font-size:11px; padding:12px 10px; border-bottom:1px solid var(--border); }
+td { padding:12px 10px; border-bottom:1px solid rgba(255,255,255,0.05); font-size:13px; }
 
-.pill-active { color:var(--green); font-weight:bold; }
-.btn-del { color:var(--red); cursor:pointer; font-weight:bold; }
+/* Buttons & Alerts */
+.btn { padding:10px; border-radius:8px; border:none; font-weight:bold; cursor:pointer; text-transform:uppercase; font-family:'Barlow Condensed'; transition:0.2s; width:100%; }
+.btn-accent { background:var(--accent); color:white; }
+.btn-red { background:var(--red); color:white; }
+.pill { padding:3px 8px; border-radius:4px; font-size:10px; font-weight:bold; }
+.pill-red { background:rgba(239,68,68,0.1); color:var(--red); border:1px solid var(--red); }
+.pill-green { background:rgba(34,197,94,0.1); color:var(--green); border:1px solid var(--green); }
+
+.alert-item { background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.2); border-radius:10px; padding:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
+
+input, select { background:var(--surface2); border:1px solid var(--border); color:white; padding:10px; border-radius:8px; width:100%; margin-bottom:10px; outline:none; }
+
+@media(max-width:1000px) { .main-layout { grid-template-columns: 1fr; } .stats-grid { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
 
 <header>
   <div class="logo-text">Premium <span>Gym</span></div>
-  <div id="syncStatus" style="font-size:10px; color:var(--green)">● CLOUD SYNC ACTIVE</div>
+  <div id="syncStatus" style="font-size:11px; color:var(--green)">● CLOUD DATABASE CONNECTED</div>
 </header>
 
 <main>
   <div class="stats-grid">
     <div class="stat-card">
+      <div class="stat-label">Total Members</div>
       <div class="stat-num" id="statTotal">0</div>
-      <div style="color:var(--muted)">Total Members</div>
     </div>
     <div class="stat-card">
-      <div class="stat-num" id="statActive" style="color:var(--green)">0</div>
-      <div style="color:var(--muted)">Active</div>
+      <div class="stat-label">Total Revenue (Monthly)</div>
+      <div class="stat-num" id="statRev">0</div>
     </div>
     <div class="stat-card">
-      <div class="stat-num" id="statRevenue">0</div>
-      <div style="color:var(--muted)">Revenue (Rs)</div>
+      <div class="stat-label">Total Expenses</div>
+      <div class="stat-num" id="statExp" style="color:var(--red)">0</div>
     </div>
     <div class="stat-card">
-      <div class="stat-num" id="statExpenses" style="color:var(--red)">0</div>
-      <div style="color:var(--muted)">Expenses</div>
+      <div class="stat-label">Net Profit</div>
+      <div class="stat-num" id="statProfit" style="color:var(--blue)">0</div>
     </div>
   </div>
 
-  <div class="bottom-grid">
-    <div class="panel">
-      <h3>Member Directory</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Package</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="memberTableBody"></tbody>
-      </table>
+  <div class="main-layout">
+    <div class="left-col">
+      <div class="panel">
+        <div class="panel-title">Active Members Directory</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Member Name</th>
+              <th>Package</th>
+              <th>Joined</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="memberTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Expense Summary</div>
+        <div id="expenseList"></div>
+      </div>
     </div>
 
-    <div class="panel">
-      <h3 style="color:var(--accent); margin-bottom:15px;">Enroll New Member</h3>
-      <input type="text" id="memberName" placeholder="Full Name">
-      <input type="text" id="memberPhone" placeholder="Phone Number">
-      <select id="memberPackage">
-        <option value="Basic">Basic Package (Rs. 2500)</option>
-        <option value="PT">Personal Training (Rs. 8000)</option>
-      </select>
-      <button class="submit-btn" onclick="addMember()">Add to Cloud</button>
+    <div class="right-col">
+      <div class="panel" style="border-top: 3px solid var(--accent);">
+        <div class="panel-title" style="color:var(--accent)">Enroll New Member</div>
+        <input type="text" id="mName" placeholder="Full Name">
+        <input type="text" id="mPhone" placeholder="WhatsApp (e.g. 92300...)">
+        <select id="mPkg">
+          <option value="Basic|2500">Basic (Rs. 2500)</option>
+          <option value="PT|8000">Personal Training (Rs. 8000)</option>
+        </select>
+        <button class="btn btn-accent" onclick="addMember()">Enroll & Print Invoice</button>
+      </div>
 
-      <hr style="margin:20px 0; border:0; border-top:1px solid var(--border);">
-      
-      <h3 style="color:var(--red); margin-bottom:15px;">Add Expense</h3>
-      <input type="text" id="expLabel" placeholder="Electricity, Rent, etc.">
-      <input type="number" id="expAmount" placeholder="Amount in Rs.">
-      <button class="submit-btn" style="background:var(--red)" onclick="addExpense()">Add Expense</button>
+      <div class="panel" style="border-top: 3px solid var(--red);">
+        <div class="panel-title" style="color:var(--red)">Add Expense</div>
+        <input type="text" id="eLabel" placeholder="e.g. Rent, Bill">
+        <input type="number" id="eAmt" placeholder="Amount (Rs.)">
+        <button class="btn btn-red" onclick="addExpense()">Add Expense</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">🚨 Fee Alerts</div>
+        <div id="feeAlerts"></div>
+      </div>
     </div>
   </div>
 </main>
 
 <script>
-// Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCJac3HBkDaCACXHyXIz4D5U_HSSR67xvs",
   authDomain: "premium-gym-nk.firebaseapp.com",
@@ -147,87 +143,81 @@ const firebaseConfig = {
   messagingSenderId: "450647905128",
   appId: "1:450647905128:web:fa59f3b0d3035ae00bfcdd"
 };
-
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ADD MEMBER
+// Functions
 function addMember() {
-  const name = document.getElementById('memberName').value;
-  const phone = document.getElementById('memberPhone').value;
-  const pkg = document.getElementById('memberPackage').value;
-  const price = (pkg === 'Basic') ? 2500 : 8000;
+  const name = document.getElementById('mName').value;
+  const phone = document.getElementById('mPhone').value;
+  const pkgData = document.getElementById('mPkg').value.split('|');
+  if(!name || !phone) return alert("Fill all fields");
 
-  if(name && phone) {
-    db.ref('members').push({
-      name, phone, pkg, price,
-      status: 'Active',
-      date: new Date().toLocaleDateString()
-    });
-    document.getElementById('memberName').value = '';
-    document.getElementById('memberPhone').value = '';
-  }
+  db.ref('members').push({
+    name, phone, pkgName: pkgData[0], price: parseInt(pkgData[1]),
+    date: new Date().toISOString(),
+    status: 'Paid'
+  });
+  window.print();
+  document.getElementById('mName').value = '';
 }
 
-// ADD EXPENSE
 function addExpense() {
-  const label = document.getElementById('expLabel').value;
-  const amount = document.getElementById('expAmount').value;
-  if(label && amount) {
-    db.ref('expenses').push({
-      label, amount: parseInt(amount),
-      date: new Date().toLocaleDateString()
-    });
-    document.getElementById('expLabel').value = '';
-    document.getElementById('expAmount').value = '';
-  }
+  const label = document.getElementById('eLabel').value;
+  const amount = parseInt(document.getElementById('eAmt').value);
+  if(!label || !amount) return;
+  db.ref('expenses').push({ label, amount, date: new Date().toISOString() });
+  document.getElementById('eLabel').value = ''; document.getElementById('eAmt').value = '';
 }
 
-// DELETE ITEM
-function deleteItem(path, id) {
-  if(confirm('Delete kar dein?')) {
-    db.ref(path + '/' + id).remove();
-  }
+function deleteData(path, id) {
+  if(confirm('Delete kar dein?')) db.ref(path + '/' + id).remove();
 }
 
-// REAL-TIME SYNC DATA
-db.ref().on('value', (snapshot) => {
-  const data = snapshot.val() || {};
+// Data Sync
+db.ref().on('value', (snap) => {
+  const data = snap.val() || {};
   const members = data.members || {};
   const expenses = data.expenses || {};
 
-  // Update Table
-  const tbody = document.getElementById('memberTableBody');
-  tbody.innerHTML = '';
-  let totalRev = 0;
-  let totalExp = 0;
-  let memberCount = 0;
-
+  let totalRev = 0, totalExp = 0, mCount = 0;
+  
+  // Members Table
+  const mTable = document.getElementById('memberTableBody');
+  mTable.innerHTML = '';
   Object.keys(members).forEach(id => {
     const m = members[id];
-    totalRev += m.price;
-    memberCount++;
-    tbody.innerHTML += `
+    totalRev += m.price; mCount++;
+    mTable.innerHTML += `
       <tr>
-        <td><b>${m.name}</b></td>
-        <td>${m.phone}</td>
-        <td>${m.pkg}</td>
-        <td class="pill-active">${m.status}</td>
-        <td class="btn-del" onclick="deleteItem('members', '${id}')">DELETE</td>
-      </tr>
-    `;
+        <td><b>${m.name}</b><br><small style="color:var(--muted)">${m.phone}</small></td>
+        <td>${m.pkgName}</td>
+        <td>${new Date(m.date).toLocaleDateString()}</td>
+        <td><span class="pill pill-green">ACTIVE</span></td>
+        <td>
+          <span style="cursor:pointer" onclick="window.open('https://wa.me/${m.phone}?text=Hello ${m.name}, your gym fee is confirmed.')">💬</span>
+          <span style="cursor:pointer; margin-left:10px" onclick="deleteData('members','${id}')">🗑️</span>
+        </td>
+      </tr>`;
   });
 
+  // Expenses List
+  const eList = document.getElementById('expenseList');
+  eList.innerHTML = '';
   Object.keys(expenses).forEach(id => {
-    totalExp += expenses[id].amount;
+    const e = expenses[id];
+    totalExp += e.amount;
+    eList.innerHTML += `<div class="alert-item" style="background:var(--surface2)">
+      <span>${e.label}</span>
+      <span><b>Rs. ${e.amount}</b> <small onclick="deleteData('expenses','${id}')" style="color:var(--red); cursor:pointer; margin-left:10px">X</small></span>
+    </div>`;
   });
 
-  // Update Stats
-  document.getElementById('statTotal').innerText = memberCount;
-  document.getElementById('statActive').innerText = memberCount;
-  document.getElementById('statRevenue').innerText = totalRev.toLocaleString();
-  document.getElementById('statExpenses').innerText = totalExp.toLocaleString();
+  // Profit Calc & Alerts
+  document.getElementById('statTotal').innerText = mCount;
+  document.getElementById('statRev').innerText = "Rs. " + totalRev.toLocaleString();
+  document.getElementById('statExp').innerText = "Rs. " + totalExp.toLocaleString();
+  document.getElementById('statProfit').innerText = "Rs. " + (totalRev - totalExp).toLocaleString();
 });
 </script>
 </body>
