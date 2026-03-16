@@ -5,91 +5,128 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Premium Gym — North Karachi · POS</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 
 <style>
-:root { --bg: #0c0c0e; --surface: #131318; --surface2: #1b1b22; --border: #2e2e3a; --accent: #f97316; --text: #eeeef5; --muted: #666678; --red: #ef4444; --green: #22c55e; --blue: #3b82f6; }
-body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; margin:0; }
-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 30px; border-bottom: 1px solid var(--border); background: #0c0c0e; position: sticky; top: 0; z-index: 100; }
-.logo { font-family:'Barlow Condensed'; font-weight:900; font-size:22px; text-transform:uppercase; color:white; }
-.logo span { color:var(--accent); }
-main { padding:25px; max-width:1400px; margin:0 auto; }
-.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:25px; }
-.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; text-align:center; }
-.stat-num { font-family:'Barlow Condensed'; font-size:35px; font-weight:900; color:var(--accent); }
-.layout { display:grid; grid-template-columns: 1fr 350px; gap:20px; }
-.panel { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:20px; }
-input, select { background:var(--surface2); border:1px solid var(--border); color:white; padding:10px; border-radius:6px; width:100%; margin-bottom:10px; }
-.btn { background:var(--accent); color:white; font-weight:bold; padding:12px; border:none; border-radius:6px; width:100%; cursor:pointer; text-transform:uppercase; }
+/* ══════════════════════════════════════════════════
+   DESIGN TOKENS (Vahi purane tokens jo aapne diye thay)
+══════════════════════════════════════════════════ */
+:root {
+  --bg: #0c0c0e; --surface: #131318; --surface2: #1b1b22; --border: #2e2e3a;
+  --accent: #f97316; --green: #22c55e; --red: #ef4444; --blue: #3b82f6;
+  --text: #eeeef5; --muted: #666678; --radius: 14px;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+/* Header & Layout */
+header { display: flex; align-items: center; justify-content: space-between; padding: 16px 36px; border-bottom: 1px solid var(--border); background: rgba(12,12,14,0.94); position: sticky; top: 0; z-index: 200; }
+.logo-text { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:19px; text-transform:uppercase; }
+.logo-text span { color:var(--accent); }
+main { padding:32px 36px; max-width:1400px; margin:0 auto; }
+
+/* Stats */
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-bottom:36px; }
+.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px; text-align:center; position:relative; }
+.stat-num { font-family:'Barlow Condensed',sans-serif; font-size:42px; font-weight:900; color:var(--accent); }
+
+/* Panels & Tables */
+.bottom-grid { display:grid; grid-template-columns:1fr 380px; gap:22px; }
+.panel { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
 table { width:100%; border-collapse:collapse; }
-th { text-align:left; color:var(--muted); font-size:11px; padding:10px; border-bottom:1px solid var(--border); }
-td { padding:12px 10px; border-bottom:1px solid rgba(255,255,255,0.05); font-size:13px; }
-.pill { padding:3px 8px; border-radius:4px; font-size:10px; font-weight:bold; border:1px solid; }
-.pill-green { color:var(--green); background:rgba(34,197,94,0.1); }
+th { text-align:left; padding:12px 18px; font-size:11px; color:var(--muted); text-transform:uppercase; background:var(--surface2); }
+td { padding:14px 18px; border-bottom:1px solid rgba(255,255,255,0.05); font-size:13.5px; }
+
+/* Buttons & Inputs */
+input, select { background:var(--surface2); border:1px solid var(--border); color:white; padding:10px; border-radius:8px; width:100%; margin-bottom:10px; outline:none; }
+.submit-btn { background:var(--accent); color:white; font-weight:bold; padding:12px; border-radius:8px; width:100%; cursor:pointer; border:none; text-transform:uppercase; }
+
+/* Action Icons */
+.action-cell { display:flex; gap:8px; }
+.icon-btn { cursor:pointer; font-size:16px; transition:0.2s; opacity:0.8; }
+.icon-btn:hover { transform:scale(1.2); opacity:1; }
+
+/* Modal Design */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.8); display:none; place-items:center; z-index:1000; }
+.modal { background:var(--surface); padding:30px; border-radius:18px; text-align:center; width:350px; border:1px solid var(--border); }
+.modal-btns { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">Premium <span>Gym</span></div>
-  <div style="color:var(--green); font-size:12px;">● CLOUD SYNC ACTIVE</div>
+  <div class="logo-text">Premium <span>Gym</span></div>
+  <div style="color:var(--green); font-size:12px">● CLOUD SYNC ACTIVE</div>
 </header>
 
 <main>
   <div class="stats-grid">
     <div class="stat-card">
-      <div style="font-size:11px; color:var(--muted)">TOTAL MEMBERS</div>
       <div class="stat-num" id="statTotal">0</div>
+      <div style="color:var(--muted); font-size:12px">TOTAL MEMBERS</div>
     </div>
     <div class="stat-card">
-      <div style="font-size:11px; color:var(--muted)">REVENUE</div>
-      <div class="stat-num" id="statRev">0</div>
+      <div class="stat-num" id="statActive" style="color:var(--green)">0</div>
+      <div style="color:var(--muted); font-size:12px">ACTIVE</div>
     </div>
     <div class="stat-card">
-      <div style="font-size:11px; color:var(--muted)">EXPENSES</div>
-      <div class="stat-num" id="statExp" style="color:var(--red)">0</div>
+      <div class="stat-num" id="statRev" style="color:var(--blue)">0</div>
+      <div style="color:var(--muted); font-size:12px">REVENUE</div>
     </div>
     <div class="stat-card">
-      <div style="font-size:11px; color:var(--muted)">NET PROFIT</div>
-      <div class="stat-num" id="statProfit" style="color:var(--blue)">0</div>
+      <div class="stat-num" id="statProfit">0</div>
+      <div style="color:var(--muted); font-size:12px">NET PROFIT</div>
     </div>
   </div>
 
-  <div class="layout">
-    <div>
-      <div class="panel">
-        <h3 style="margin-bottom:15px; font-family:Barlow Condensed">MEMBER DIRECTORY</h3>
-        <table>
-          <thead><tr><th>Name</th><th>Package</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody id="mTable"></tbody>
-        </table>
-      </div>
-      <div class="panel">
-        <h3 style="margin-bottom:15px; font-family:Barlow Condensed">EXPENSE LOG</h3>
-        <div id="eList"></div>
-      </div>
+  <div class="bottom-grid">
+    <div class="panel">
+      <div style="padding:20px; font-weight:bold; border-bottom:1px solid var(--border)">MEMBER DIRECTORY</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Package</th>
+            <th>Joined</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="memberTableBody"></tbody>
+      </table>
     </div>
 
-    <div>
-      <div class="panel" style="border-top:3px solid var(--accent)">
-        <h3 style="margin-bottom:10px; color:var(--accent)">ENROLL MEMBER</h3>
-        <input id="n" placeholder="Name">
-        <input id="p" placeholder="WhatsApp (923...)">
-        <select id="pkg"><option value="Basic|2500">Basic (2500)</option><option value="PT|8000">PT (8000)</option></select>
-        <button class="btn" onclick="addM()">Enroll & Print</button>
-      </div>
-      <div class="panel" style="border-top:3px solid var(--red)">
-        <h3 style="margin-bottom:10px; color:var(--red)">ADD EXPENSE</h3>
-        <input id="el" placeholder="Rent, Bill, etc.">
-        <input id="ea" type="number" placeholder="Amount">
-        <button class="btn" style="background:var(--red)" onclick="addE()">Save Expense</button>
+    <div class="right-col">
+      <div class="panel" style="padding:20px; border-top:3px solid var(--accent)">
+        <h3 style="color:var(--accent); margin-bottom:15px">ENROLL MEMBER</h3>
+        <input type="text" id="mName" placeholder="Full Name">
+        <input type="text" id="mPhone" placeholder="WhatsApp Number">
+        <select id="mPkg">
+          <option value="Basic|2500">Basic (Rs. 2500)</option>
+          <option value="PT|8000">Personal Training (Rs. 8000)</option>
+        </select>
+        <button class="submit-btn" onclick="addMember()">Enroll & Print</button>
       </div>
     </div>
   </div>
 </main>
 
+<div id="deleteModal" class="modal-overlay">
+  <div class="modal">
+    <div style="font-size:40px">🗑️</div>
+    <h3 style="margin:10px 0">Delete Member?</h3>
+    <p style="color:var(--muted); font-size:14px">Kya aap waqai is member ka record khatam karna chahte hain?</p>
+    <div class="modal-btns">
+      <button onclick="closeModal()" style="background:var(--surface2); color:white; border:none; padding:10px; border-radius:8px; cursor:pointer">Cancel</button>
+      <button id="confirmDelBtn" style="background:var(--red); color:white; border:none; padding:10px; border-radius:8px; cursor:pointer">Delete</button>
+    </div>
+  </div>
+</div>
+
 <script>
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyCJac3HBkDaCACXHyXIz4D5U_HSSR67xvs",
   authDomain: "premium-gym-nk.firebaseapp.com",
@@ -102,37 +139,77 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-function addM() {
-  const name=document.getElementById('n').value, ph=document.getElementById('p').value, pk=document.getElementById('pkg').value.split('|');
-  if(name&&ph){
-    db.ref('members').push({name, ph, pkg:pk[0], price:parseInt(pk[1]), date:new Date().toLocaleDateString()});
-    window.print();
-    document.getElementById('n').value=''; document.getElementById('p').value='';
+let deleteId = null;
+
+// Add Member
+function addMember() {
+  const name = document.getElementById('mName').value;
+  const phone = document.getElementById('mPhone').value;
+  const pkgData = document.getElementById('mPkg').value.split('|');
+  
+  if(name && phone) {
+    db.ref('members').push({
+      name, phone, 
+      pkg: pkgData[0], 
+      price: parseInt(pkgData[1]),
+      date: new Date().toLocaleDateString()
+    });
+    document.getElementById('mName').value = '';
+    document.getElementById('mPhone').value = '';
+    alert("Member Added!");
   }
 }
-function addE() {
-  const l=document.getElementById('el').value, a=parseInt(document.getElementById('ea').value);
-  if(l&&a){ db.ref('expenses').push({l, a}); document.getElementById('el').value=''; document.getElementById('ea').value=''; }
-}
-function del(path, id) { if(confirm('Delete?')) db.ref(path+'/'+id).remove(); }
 
-db.ref().on('value', (snap) => {
-  const data = snap.val()||{}, mems = data.members||{}, exps = data.expenses||{};
-  let r=0, e=0, c=0;
-  const mt=document.getElementById('mTable'); mt.innerHTML='';
-  Object.keys(mems).forEach(id => {
-    const m=mems[id]; r+=m.price; c++;
-    mt.innerHTML += `<tr><td><b>${m.name}</b><br><small>${m.ph}</small></td><td>${m.pkg}</td><td>${m.date}</td><td><span class="pill pill-green">PAID</span></td><td><span onclick="window.open('https://wa.me/${m.ph}')">💬</span> <span onclick="del('members','${id}')">🗑️</span></td></tr>`;
-  });
-  const el=document.getElementById('eList'); el.innerHTML='';
-  Object.keys(exps).forEach(id => {
-    e+=exps[id].a;
-    el.innerHTML += `<div style="display:flex; justify-content:space-between; padding:8px; background:var(--surface2); margin-bottom:5px; border-radius:5px"><span>${exps[id].l}</span><span>Rs. ${exps[id].a} <b onclick="del('expenses','${id}')" style="color:var(--red); cursor:pointer">X</b></span></div>`;
-  });
-  document.getElementById('statTotal').innerText=c;
-  document.getElementById('statRev').innerText="Rs. "+r;
-  document.getElementById('statExp').innerText="Rs. "+e;
-  document.getElementById('statProfit').innerText="Rs. "+(r-e);
+// Open Delete Modal
+function openDeleteModal(id) {
+  deleteId = id;
+  document.getElementById('deleteModal').style.display = 'grid';
+}
+
+function closeModal() {
+  document.getElementById('deleteModal').style.display = 'none';
+}
+
+// Real Delete Logic
+document.getElementById('confirmDelBtn').onclick = function() {
+  if(deleteId) {
+    db.ref('members/' + deleteId).remove()
+      .then(() => {
+        closeModal();
+        console.log("Deleted successfully");
+      });
+  }
+};
+
+// Sync Data
+db.ref('members').on('value', (snapshot) => {
+  const data = snapshot.val();
+  const tbody = document.getElementById('memberTableBody');
+  tbody.innerHTML = '';
+  let count = 0, rev = 0;
+
+  if(data) {
+    Object.keys(data).forEach(id => {
+      const m = data[id];
+      count++; rev += m.price;
+      tbody.innerHTML += `
+        <tr>
+          <td><b>${m.name}</b><br><small style="color:var(--muted)">${m.phone}</small></td>
+          <td>${m.pkg}</td>
+          <td>${m.date}</td>
+          <td style="color:var(--green)">Active</td>
+          <td class="action-cell">
+            <span class="icon-btn" onclick="window.open('https://wa.me/${m.phone}')">💬</span>
+            <span class="icon-btn" onclick="openDeleteModal('${id}')" style="color:var(--red)">🗑️</span>
+          </td>
+        </tr>
+      `;
+    });
+  }
+  document.getElementById('statTotal').innerText = count;
+  document.getElementById('statActive').innerText = count;
+  document.getElementById('statRev').innerText = "Rs. " + rev;
+  document.getElementById('statProfit').innerText = "Rs. " + rev;
 });
 </script>
 </body>
