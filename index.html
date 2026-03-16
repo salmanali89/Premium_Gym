@@ -9,125 +9,81 @@
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 
 <style>
-:root {
-  --bg: #0c0c0e; --surface: #131318; --surface2: #1b1b22;
-  --border: #2e2e3a; --accent: #f97316; --text: #eeeef5;
-  --muted: #666678; --red: #ef4444; --green: #22c55e; --blue: #3b82f6;
-}
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
-
-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 36px; border-bottom: 1px solid var(--border); background: rgba(12,12,14,0.94); position: sticky; top: 0; z-index: 200; }
-.logo-text { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:22px; text-transform:uppercase; letter-spacing:1px; }
-.logo-text span { color:var(--accent); }
-
-main { padding:32px 36px; max-width:1400px; margin:0 auto; }
-
-/* Stats */
-.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-bottom:30px; }
-.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; position:relative; }
-.stat-num { font-family:'Barlow Condensed',sans-serif; font-size:38px; font-weight:900; color:var(--accent); }
-.stat-label { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:1px; font-weight:700; }
-
-.main-layout { display:grid; grid-template-columns: 1fr 380px; gap:22px; }
-
-/* Panels */
-.panel { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:22px; }
-.panel-title { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:700; margin-bottom:15px; color:var(--text); text-transform:uppercase; display:flex; justify-content:space-between; }
-
-/* Tables */
+:root { --bg: #0c0c0e; --surface: #131318; --surface2: #1b1b22; --border: #2e2e3a; --accent: #f97316; --text: #eeeef5; --muted: #666678; --red: #ef4444; --green: #22c55e; --blue: #3b82f6; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; margin:0; }
+header { display: flex; align-items: center; justify-content: space-between; padding: 15px 30px; border-bottom: 1px solid var(--border); background: #0c0c0e; position: sticky; top: 0; z-index: 100; }
+.logo { font-family:'Barlow Condensed'; font-weight:900; font-size:22px; text-transform:uppercase; color:white; }
+.logo span { color:var(--accent); }
+main { padding:25px; max-width:1400px; margin:0 auto; }
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:25px; }
+.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; text-align:center; }
+.stat-num { font-family:'Barlow Condensed'; font-size:35px; font-weight:900; color:var(--accent); }
+.layout { display:grid; grid-template-columns: 1fr 350px; gap:20px; }
+.panel { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:20px; }
+input, select { background:var(--surface2); border:1px solid var(--border); color:white; padding:10px; border-radius:6px; width:100%; margin-bottom:10px; }
+.btn { background:var(--accent); color:white; font-weight:bold; padding:12px; border:none; border-radius:6px; width:100%; cursor:pointer; text-transform:uppercase; }
 table { width:100%; border-collapse:collapse; }
-th { text-align:left; color:var(--muted); font-size:11px; padding:12px 10px; border-bottom:1px solid var(--border); }
+th { text-align:left; color:var(--muted); font-size:11px; padding:10px; border-bottom:1px solid var(--border); }
 td { padding:12px 10px; border-bottom:1px solid rgba(255,255,255,0.05); font-size:13px; }
-
-/* Buttons & Alerts */
-.btn { padding:10px; border-radius:8px; border:none; font-weight:bold; cursor:pointer; text-transform:uppercase; font-family:'Barlow Condensed'; transition:0.2s; width:100%; }
-.btn-accent { background:var(--accent); color:white; }
-.btn-red { background:var(--red); color:white; }
-.pill { padding:3px 8px; border-radius:4px; font-size:10px; font-weight:bold; }
-.pill-red { background:rgba(239,68,68,0.1); color:var(--red); border:1px solid var(--red); }
-.pill-green { background:rgba(34,197,94,0.1); color:var(--green); border:1px solid var(--green); }
-
-.alert-item { background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.2); border-radius:10px; padding:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
-
-input, select { background:var(--surface2); border:1px solid var(--border); color:white; padding:10px; border-radius:8px; width:100%; margin-bottom:10px; outline:none; }
-
-@media(max-width:1000px) { .main-layout { grid-template-columns: 1fr; } .stats-grid { grid-template-columns: 1fr 1fr; } }
+.pill { padding:3px 8px; border-radius:4px; font-size:10px; font-weight:bold; border:1px solid; }
+.pill-green { color:var(--green); background:rgba(34,197,94,0.1); }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo-text">Premium <span>Gym</span></div>
-  <div id="syncStatus" style="font-size:11px; color:var(--green)">● CLOUD DATABASE CONNECTED</div>
+  <div class="logo">Premium <span>Gym</span></div>
+  <div style="color:var(--green); font-size:12px;">● CLOUD SYNC ACTIVE</div>
 </header>
 
 <main>
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-label">Total Members</div>
+      <div style="font-size:11px; color:var(--muted)">TOTAL MEMBERS</div>
       <div class="stat-num" id="statTotal">0</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Total Revenue (Monthly)</div>
+      <div style="font-size:11px; color:var(--muted)">REVENUE</div>
       <div class="stat-num" id="statRev">0</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Total Expenses</div>
+      <div style="font-size:11px; color:var(--muted)">EXPENSES</div>
       <div class="stat-num" id="statExp" style="color:var(--red)">0</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Net Profit</div>
+      <div style="font-size:11px; color:var(--muted)">NET PROFIT</div>
       <div class="stat-num" id="statProfit" style="color:var(--blue)">0</div>
     </div>
   </div>
 
-  <div class="main-layout">
-    <div class="left-col">
+  <div class="layout">
+    <div>
       <div class="panel">
-        <div class="panel-title">Active Members Directory</div>
+        <h3 style="margin-bottom:15px; font-family:Barlow Condensed">MEMBER DIRECTORY</h3>
         <table>
-          <thead>
-            <tr>
-              <th>Member Name</th>
-              <th>Package</th>
-              <th>Joined</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="memberTableBody"></tbody>
+          <thead><tr><th>Name</th><th>Package</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="mTable"></tbody>
         </table>
       </div>
-
       <div class="panel">
-        <div class="panel-title">Expense Summary</div>
-        <div id="expenseList"></div>
+        <h3 style="margin-bottom:15px; font-family:Barlow Condensed">EXPENSE LOG</h3>
+        <div id="eList"></div>
       </div>
     </div>
 
-    <div class="right-col">
-      <div class="panel" style="border-top: 3px solid var(--accent);">
-        <div class="panel-title" style="color:var(--accent)">Enroll New Member</div>
-        <input type="text" id="mName" placeholder="Full Name">
-        <input type="text" id="mPhone" placeholder="WhatsApp (e.g. 92300...)">
-        <select id="mPkg">
-          <option value="Basic|2500">Basic (Rs. 2500)</option>
-          <option value="PT|8000">Personal Training (Rs. 8000)</option>
-        </select>
-        <button class="btn btn-accent" onclick="addMember()">Enroll & Print Invoice</button>
+    <div>
+      <div class="panel" style="border-top:3px solid var(--accent)">
+        <h3 style="margin-bottom:10px; color:var(--accent)">ENROLL MEMBER</h3>
+        <input id="n" placeholder="Name">
+        <input id="p" placeholder="WhatsApp (923...)">
+        <select id="pkg"><option value="Basic|2500">Basic (2500)</option><option value="PT|8000">PT (8000)</option></select>
+        <button class="btn" onclick="addM()">Enroll & Print</button>
       </div>
-
-      <div class="panel" style="border-top: 3px solid var(--red);">
-        <div class="panel-title" style="color:var(--red)">Add Expense</div>
-        <input type="text" id="eLabel" placeholder="e.g. Rent, Bill">
-        <input type="number" id="eAmt" placeholder="Amount (Rs.)">
-        <button class="btn btn-red" onclick="addExpense()">Add Expense</button>
-      </div>
-
-      <div class="panel">
-        <div class="panel-title">🚨 Fee Alerts</div>
-        <div id="feeAlerts"></div>
+      <div class="panel" style="border-top:3px solid var(--red)">
+        <h3 style="margin-bottom:10px; color:var(--red)">ADD EXPENSE</h3>
+        <input id="el" placeholder="Rent, Bill, etc.">
+        <input id="ea" type="number" placeholder="Amount">
+        <button class="btn" style="background:var(--red)" onclick="addE()">Save Expense</button>
       </div>
     </div>
   </div>
@@ -146,78 +102,37 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Functions
-function addMember() {
-  const name = document.getElementById('mName').value;
-  const phone = document.getElementById('mPhone').value;
-  const pkgData = document.getElementById('mPkg').value.split('|');
-  if(!name || !phone) return alert("Fill all fields");
-
-  db.ref('members').push({
-    name, phone, pkgName: pkgData[0], price: parseInt(pkgData[1]),
-    date: new Date().toISOString(),
-    status: 'Paid'
-  });
-  window.print();
-  document.getElementById('mName').value = '';
+function addM() {
+  const name=document.getElementById('n').value, ph=document.getElementById('p').value, pk=document.getElementById('pkg').value.split('|');
+  if(name&&ph){
+    db.ref('members').push({name, ph, pkg:pk[0], price:parseInt(pk[1]), date:new Date().toLocaleDateString()});
+    window.print();
+    document.getElementById('n').value=''; document.getElementById('p').value='';
+  }
 }
-
-function addExpense() {
-  const label = document.getElementById('eLabel').value;
-  const amount = parseInt(document.getElementById('eAmt').value);
-  if(!label || !amount) return;
-  db.ref('expenses').push({ label, amount, date: new Date().toISOString() });
-  document.getElementById('eLabel').value = ''; document.getElementById('eAmt').value = '';
+function addE() {
+  const l=document.getElementById('el').value, a=parseInt(document.getElementById('ea').value);
+  if(l&&a){ db.ref('expenses').push({l, a}); document.getElementById('el').value=''; document.getElementById('ea').value=''; }
 }
+function del(path, id) { if(confirm('Delete?')) db.ref(path+'/'+id).remove(); }
 
-function deleteData(path, id) {
-  if(confirm('Delete kar dein?')) db.ref(path + '/' + id).remove();
-}
-
-// Data Sync
 db.ref().on('value', (snap) => {
-  const data = snap.val() || {};
-  const members = data.members || {};
-  const expenses = data.expenses || {};
-
-  let totalRev = 0, totalExp = 0, mCount = 0;
-  
-  // Members Table
-  const mTable = document.getElementById('memberTableBody');
-  mTable.innerHTML = '';
-  Object.keys(members).forEach(id => {
-    const m = members[id];
-    totalRev += m.price; mCount++;
-    mTable.innerHTML += `
-      <tr>
-        <td><b>${m.name}</b><br><small style="color:var(--muted)">${m.phone}</small></td>
-        <td>${m.pkgName}</td>
-        <td>${new Date(m.date).toLocaleDateString()}</td>
-        <td><span class="pill pill-green">ACTIVE</span></td>
-        <td>
-          <span style="cursor:pointer" onclick="window.open('https://wa.me/${m.phone}?text=Hello ${m.name}, your gym fee is confirmed.')">💬</span>
-          <span style="cursor:pointer; margin-left:10px" onclick="deleteData('members','${id}')">🗑️</span>
-        </td>
-      </tr>`;
+  const data = snap.val()||{}, mems = data.members||{}, exps = data.expenses||{};
+  let r=0, e=0, c=0;
+  const mt=document.getElementById('mTable'); mt.innerHTML='';
+  Object.keys(mems).forEach(id => {
+    const m=mems[id]; r+=m.price; c++;
+    mt.innerHTML += `<tr><td><b>${m.name}</b><br><small>${m.ph}</small></td><td>${m.pkg}</td><td>${m.date}</td><td><span class="pill pill-green">PAID</span></td><td><span onclick="window.open('https://wa.me/${m.ph}')">💬</span> <span onclick="del('members','${id}')">🗑️</span></td></tr>`;
   });
-
-  // Expenses List
-  const eList = document.getElementById('expenseList');
-  eList.innerHTML = '';
-  Object.keys(expenses).forEach(id => {
-    const e = expenses[id];
-    totalExp += e.amount;
-    eList.innerHTML += `<div class="alert-item" style="background:var(--surface2)">
-      <span>${e.label}</span>
-      <span><b>Rs. ${e.amount}</b> <small onclick="deleteData('expenses','${id}')" style="color:var(--red); cursor:pointer; margin-left:10px">X</small></span>
-    </div>`;
+  const el=document.getElementById('eList'); el.innerHTML='';
+  Object.keys(exps).forEach(id => {
+    e+=exps[id].a;
+    el.innerHTML += `<div style="display:flex; justify-content:space-between; padding:8px; background:var(--surface2); margin-bottom:5px; border-radius:5px"><span>${exps[id].l}</span><span>Rs. ${exps[id].a} <b onclick="del('expenses','${id}')" style="color:var(--red); cursor:pointer">X</b></span></div>`;
   });
-
-  // Profit Calc & Alerts
-  document.getElementById('statTotal').innerText = mCount;
-  document.getElementById('statRev').innerText = "Rs. " + totalRev.toLocaleString();
-  document.getElementById('statExp').innerText = "Rs. " + totalExp.toLocaleString();
-  document.getElementById('statProfit').innerText = "Rs. " + (totalRev - totalExp).toLocaleString();
+  document.getElementById('statTotal').innerText=c;
+  document.getElementById('statRev').innerText="Rs. "+r;
+  document.getElementById('statExp').innerText="Rs. "+e;
+  document.getElementById('statProfit').innerText="Rs. "+(r-e);
 });
 </script>
 </body>
