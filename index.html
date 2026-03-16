@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Premium Gym — North Karachi · POS</title>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════════════════════
@@ -1423,6 +1425,76 @@ renderAlerts();
 renderExpenses(currentMonth);
 recalcProfit();
 document.getElementById('resultCount').textContent = members.length + ' members';
+// --- FIREBASE SETTINGS ---
+const firebaseConfig = {
+    apiKey: "AIzaSyCJac3HBkDaCACXHyXIz4D5U_HSSR67xvs",
+    authDomain: "premium-gym.firebaseapp.com",
+    databaseURL: "https://premium-gym-default-rtdb.firebaseio.com",
+    projectId: "premium-gym",
+    storageBucket: "premium-gym.firebasestorage.app",
+    messagingSenderId: "450647905128",
+    appId: "1:450647905128:web:fa59f3b0d3035ae00bfcdd"
+};
+
+// Initialize Firebase
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
+
+// CLOUD SYNC: Data load aur update karne ka function
+function syncWithCloud() {
+    db.ref('gym_data').on('value', (snapshot) => {
+        const cloudData = snapshot.val();
+        if (cloudData) {
+            // Cloud se data lekar local variables mein daalna
+            members = cloudData.members || [];
+            expenses = cloudData.expenses || {};
+            
+            // UI Update karna (aapke purane functions)
+            renderTable(members);
+            updateStats();
+            renderAlerts();
+            const currentMonth = document.getElementById('reportMonth').value;
+            renderExpenses(currentMonth);
+            recalcProfit();
+            
+            console.log("Cloud Sync Success!");
+        }
+    });
+}
+
+// SAVE: Jab bhi laptop par kuch tabdeeli ho, Cloud par bhejien
+function saveToCloud() {
+    db.ref('gym_data').set({
+        members: members,
+        expenses: expenses
+    });
+}
+
+// Purane functions ko override karna taake wo Cloud par data bhejien
+const originalAddMember = addMember;
+addMember = function() {
+    originalAddMember(); // Pehle local add karega
+    saveToCloud();       // Phir cloud par save karega
+};
+
+const originalAddExpense = addExpense;
+addExpense = function() {
+    originalAddExpense();
+    saveToCloud();
+};
+
+const originalDeleteMember = deleteMember;
+deleteMember = function(index) {
+    if(confirm("Are you sure you want to delete this member from Cloud?")) {
+        members.splice(index, 1);
+        saveToCloud();
+    }
+};
+
+// Page load hote hi sync shuru karein
+syncWithCloud();
 </script>
 </body>
 </html>
